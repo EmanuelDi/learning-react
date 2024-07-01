@@ -1,14 +1,14 @@
- import { WINNER_COMBOS } from "../constants.js"
- 
- export const checkWinnerFrom = (boardToCheck) => {
+import { WINNER_COMBOS } from '../constants.js'
+
+export const checkWinnerFrom = (boardToCheck) => {
   // revisamos las convinaciones ganadoras
   // para ver sio X o O ganó
-  for(const combo of WINNER_COMBOS) {
+  for (const combo of WINNER_COMBOS) {
     const [a, b, c] = combo
     if (
       boardToCheck[a] &&
-      boardToCheck[a] == boardToCheck[b] &&
-      boardToCheck[a] == boardToCheck[c]
+      boardToCheck[a] === boardToCheck[b] &&
+      boardToCheck[a] === boardToCheck[c]
     ) {
       return boardToCheck[a]
     }
@@ -23,4 +23,3 @@ export const checkEndGame = (newBoard) => {
   // en el tablero
   return newBoard.every((square) => square != null)
 }
-

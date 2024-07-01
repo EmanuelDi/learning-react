@@ -1,9 +1,9 @@
-import { Square } from './Square.jsx';
-import { TURNS } from '../constants.js';
+import { Square } from './Square.jsx'
+import { TURNS } from '../constants.js'
 
-export function TurnIndicator({ turn }) {
+export function TurnIndicator ({ turn }) {
   return (
-    <section className="turn">
+    <section className='turn'>
       <Square isSelected={turn === TURNS.X}>
         {TURNS.X}
       </Square>

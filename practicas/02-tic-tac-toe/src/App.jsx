@@ -1,20 +1,17 @@
-import { useState } from "react"
+import { useState } from 'react'
 import confetti from 'canvas-confetti'
 
-import { Board } from "./components/Board.jsx"
-import { WinnerModal } from "./components/WinnerModal.jsx"
-import { ResetButton } from "./components/ResetButton.jsx"
-import { TurnIndicator } from "./components/TurnIndicator.jsx"
+import { Board } from './components/Board.jsx'
+import { WinnerModal } from './components/WinnerModal.jsx'
+import { ResetButton } from './components/ResetButton.jsx'
+import { TurnIndicator } from './components/TurnIndicator.jsx'
 
 import { TURNS } from './constants.js'
-import { checkWinnerFrom, checkEndGame } from "./logic/board.js"
-import { saveGameToStorage, resetGameStorage } from "./storage/index.js"
+import { checkWinnerFrom, checkEndGame } from './logic/board.js'
+import { saveGameToStorage, resetGameStorage } from './storage/index.js'
 
-
-
-
-function App() {
-  //const board = Array(9).fill(null)
+function App () {
+  // const board = Array(9).fill(null)
   const [board, setBoard] = useState(() => {
     const boardFromStorage = window.localStorage.getItem('board')
     if (boardFromStorage) return JSON.parse(boardFromStorage)
@@ -25,11 +22,9 @@ function App() {
     const turnFromStorage = window.localStorage.getItem('turn')
     return turnFromStorage ?? TURNS.X
   })
-  
+
   // Null es que no hay ganador, false es que hay empate
   const [winner, setWinner] = useState(null)
-
-  
 
   const resetGame = () => {
     setBoard(Array(9).fill(null))
@@ -37,14 +32,11 @@ function App() {
     setWinner(null)
 
     resetGameStorage()
-
   }
-  
-  
 
   const updateBoard = (index) => {
     // no actualizamos posicion si ya tiene algo o hay ganador
-    if(board[index] || winner) {
+    if (board[index] || winner) {
       return
     }
     // Actualizar el tablero
@@ -53,20 +45,20 @@ function App() {
     setBoard(newBoard)
 
     // Cambiar el turno
-    const newTurn = turn === TURNS.X ? TURNS.O: TURNS.X
+    const newTurn = turn === TURNS.X ? TURNS.O : TURNS.X
     setTurn(newTurn)
 
     saveGameToStorage({
       board: newBoard,
       turn: newTurn
-    })    
+    })
 
     // Verificar si hay un ganador
     const newWinner = checkWinnerFrom(newBoard)
     if (newWinner) {
       confetti()
       setWinner(newWinner)
-    } else if  (checkEndGame(newBoard)) {
+    } else if (checkEndGame(newBoard)) {
       setWinner(false)
     }
   }
@@ -74,13 +66,13 @@ function App() {
   return (
     <main className='board'>
       <h1>Tic tac toe</h1>
-      <ResetButton onClick={resetGame}></ResetButton>
+      <ResetButton onClick={resetGame} />
 
-      <Board board={ board } updateBoard={updateBoard}></Board>
+      <Board board={board} updateBoard={updateBoard} />
 
-      <TurnIndicator turn={turn}></TurnIndicator>
+      <TurnIndicator turn={turn} />
 
-      <WinnerModal resetGame={resetGame} winner={winner}></WinnerModal>
+      <WinnerModal resetGame={resetGame} winner={winner} />
     </main>
   )
 }
