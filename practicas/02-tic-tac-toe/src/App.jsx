@@ -1,34 +1,16 @@
 import { useState } from "react"
 import confetti from 'canvas-confetti'
 
-const TURNS = {
-  X: 'x',
-  O: 'o'
-}
+import { Board } from "./components/Board.jsx"
+import { WinnerModal } from "./components/WinnerModal.jsx"
+import { ResetButton } from "./components/ResetButton.jsx"
+import { TurnIndicator } from "./components/TurnIndicator.jsx"
 
-const Square = ({ children, isSelected, updateBoard, index}) => {
-  const className = `square ${isSelected ? 'is-selected' : ''}`
-  const handleClick = () => {
-    updateBoard(index)
-  }
+import { TURNS } from './constants.js'
+import { checkWinnerFrom, checkEndGame } from "./logic/board.js"
 
-  return (
-    <div onClick={handleClick} className={className}>
-      {children}
-    </div>
-  )
-}
 
-const WINNER_COMBOS =[
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7 ,8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6]
-]
+
 
 function App() {
   //const board = Array(9).fill(null)
@@ -36,22 +18,7 @@ function App() {
   const [turn, setTurn] = useState(TURNS.X)
   const [winner, setWinner] = useState(null)
 
-  const checkWinner = (boardToCheck) => {
-    // revisamos las convinaciones ganadoras
-    // para ver sio X o O ganó
-    for(const combo of WINNER_COMBOS) {
-      const [a, b, c] = combo
-      if (
-        boardToCheck[a] &&
-        boardToCheck[a] == boardToCheck[b] &&
-        boardToCheck[a] == boardToCheck[c]
-      ) {
-        return boardToCheck[a]
-      }
-    }
-    // si no hay ganador
-    return null
-  }
+  
 
   const resetGame = () => {
     setBoard(Array(9).fill(null))
@@ -59,28 +26,24 @@ function App() {
     setWinner(null)
   }
   
-  const checkEndGame = (newBoard) => {
-    // revisamos si hay empate
-    // si no hay más espacios vacíos
-    // en el tablero
-    return newBoard.every((square) => square != null)
-  }
+  
 
   const updateBoard = (index) => {
-    // no actualizamos posicion
-    //si ya tiene algo
+    // no actualizamos posicion si ya tiene algo o hay ganador
     if(board[index] || winner) {
       return
     }
-    // actualizar el tablero
+    // Actualizar el tablero
     const newBoard = [...board]
     newBoard[index] = turn
     setBoard(newBoard)
-    // cambiar el turno
-    const newTurn = turn == TURNS.X ? TURNS.O: TURNS.X
+    
+    // Cambiar el turno
+    const newTurn = turn === TURNS.X ? TURNS.O: TURNS.X
     setTurn(newTurn)
 
-    const newWinner = checkWinner(newBoard)
+    // Verificar si hay un ganador
+    const newWinner = checkWinnerFrom(newBoard)
     if (newWinner) {
       confetti()
       setWinner(newWinner)
@@ -88,61 +51,17 @@ function App() {
       setWinner(false)
     }
   }
+
   return (
     <main className='board'>
       <h1>Tic tac toe</h1>
-      <button onClick={resetGame}>Reiniciar el Juego</button>
-      <section className='game'>
-        {
-          board.map((square, index) => {
-            return (
-              <Square
-                key={index}
-                index={index}
-                updateBoard={updateBoard}
-              >
-               {square}
-              </Square>
-            )
-          })
-        }
-      </section>
+      <ResetButton onClick={resetGame}></ResetButton>
 
-      <section className="turn">
-        <Square isSelected={turn == TURNS.X}>
-          {TURNS.X}
-        </Square>
-        <Square isSelected={turn == TURNS.O}>
-          {TURNS.O}
-        </Square>
-      </section>
+      <Board board={ board } updateBoard={updateBoard}></Board>
 
-      {
-        winner != null && (
-          <section className="winner">
-            <div className="text">
-              <h2>
-                {
-                  winner == false
-                    ? 'Empate' 
-                    : 'Ganó' 
-                }
-              </h2>
-              
-              <header className="win">
-                {winner && <Square>{winner}</Square>}
-              </header>
+      <TurnIndicator turn={turn}></TurnIndicator>
 
-              <footer>
-                <button onClick={resetGame}>Empezar de nuevo</button>
-              </footer>
-
-            </div>
-          </section>
-        )
-      }
-
-
+      <WinnerModal resetGame={resetGame} winner={winner}></WinnerModal>
     </main>
   )
 }
